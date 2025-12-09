@@ -1,34 +1,105 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from 'react'
 import './App.css'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Header from './components/header/header.tsx';
+import WeatherWidget from './components/weatherWidget/weatherWidget.tsx'; 
+import WeatherWidgetFavourites from './components/weatherWidget/weatherWidgetFavourites.tsx'; 
+import SearchBar from './components/searchBar/searchBar.tsx';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import randomCity from './utils/randomCity.tsx';
+
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [widgets, setWidgets] = useState([]);
+  const [favourites, setFavourites] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [tempFormat, setTempFormat] = useState(1); // 1=C, 2=K, 3=F
+
+
+  useEffect( () => {
+    const saved = localStorage.getItem('favourites');
+    if (saved) {
+      setFavourites(JSON.parse(saved));
+    }
+    const random = randomCity().map(city => ({
+      id: Date.now() + Math.random(), city
+    }));
+    setWidgets(random);
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if(isLoaded) {
+      localStorage.setItem('favourites', JSON.stringify(favourites));
+    }
+  }, [favourites, isLoaded]);
+
+  const handleCityChange = (cityName) => {
+    
+    setWidgets(prev => [
+      { id: Date.now(), city: cityName }, ...prev ]);
+  };
+
+  const handleWidgetClose = (id) => {
+    setWidgets(prev => prev.filter(widget => widget.id !== id));
+  };
+
+  const handleToggleFavourite = (id, city) => {
+    const isInFavourites = favourites.some(fav => fav.city === city);
+
+    if (isInFavourites) {
+      setFavourites(prev => prev.filter(fav => fav.city !== city));
+
+    } else {
+      setFavourites(prev => [{ id , city }, ...prev]);
+    }
+  };
+
+  const isCityInFavourites = (city) => {
+    return favourites.some(fav => fav.city === city);
+  };
+
+
+
+
+
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="App">
+      <BrowserRouter>
+    
+       <Header />
+        <Routes>  
+          <Route path="/" element={
+            <>
+            <SearchBar onSearch={handleCityChange}/>
+            {widgets.map(widget => (
+              <WeatherWidget 
+              key={widget.id} 
+              city={widget.city}
+              tempFormat={tempFormat} 
+              onClose={() => handleWidgetClose(widget.id)} 
+              onToggleFavourite={() => handleToggleFavourite(widget.id, widget.city)}
+              isFavourite={isCityInFavourites(widget.city)}
+              />
+            ))}
+            </>
+          } />
+          <Route path="/favourites" element={
+            favourites.map(fav => (
+              <WeatherWidgetFavourites 
+              key={fav.id} 
+              city={fav.city} 
+              onToggleFavourite={() => handleToggleFavourite(fav.id, fav.city)}
+              isFavourite={isCityInFavourites(fav.city)}
+              />
+            ))
+          } />
+        </Routes>  
+      </BrowserRouter>
+    </div>
   )
 }
 
