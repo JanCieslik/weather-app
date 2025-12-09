@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Header from './components/header/header.tsx';
-import WeatherWidget from './components/weatherWidget/weatherWidget.tsx'; 
-import WeatherWidgetFavourites from './components/weatherWidget/weatherWidgetFavourites.tsx'; 
-import SearchBar from './components/searchBar/searchBar.tsx';
+import Header from './components/header/header.jsx';
+import WeatherWidget from './components/weatherWidget/weatherWidget.jsx'; 
+import WeatherWidgetFavourites from './components/weatherWidget/weatherWidgetFavourites.jsx'; 
+import SearchBar from './components/searchBar/searchBar.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import randomCity from './utils/randomCity.tsx';
+import randomCity from './utils/randomCity.jsx';
 
 
 function App() {
@@ -68,7 +68,7 @@ function App() {
 
   return (
     <div className="App">
-      <BrowserRouter>
+      <BrowserRouter basename="/weather-app">
     
        <Header />
         <Routes>  
