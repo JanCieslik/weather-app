@@ -6,7 +6,6 @@ import WeatherWidget from './components/weatherWidget/weatherWidget.jsx';
 import WeatherWidgetFavourites from './components/weatherWidget/weatherWidgetFavourites.jsx'; 
 import SearchBar from './components/searchBar/searchBar.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
 import randomCity from './utils/randomCity.jsx';
 
 
